@@ -1,4 +1,4 @@
-⚽ **Football Match Analyzer (Demo)**
+# ⚽ **Football Match Analyzer (Demo)**
 Bu proje, futbol karşılaşmalarının analizini gerçekleştirmek için yapay zekâ destekli görsel analiz teknikleri ile geliştirilmiştir. Sistem, bir futbol maç videosu üzerinden:
 Sahadaki tüm oyuncu, kaleci, hakem ve teknik ekip üyelerini tespit eder
 Takımları forma rengine göre otomatik olarak ayırır
@@ -6,7 +6,7 @@ Hakem bilgilerini ve takım istatistiklerini web'den çeker
 
 💡 Kullanıcı, sadece takım isimlerini, forma örneklerini ve hakem isimlerini girerek analizi başlatabilir.
 
-🧠 **Tanımlanan Sınıflar (Classes)**
+## 🧠 **Tanımlanan Sınıflar (Classes)**
 
 Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
 
@@ -62,7 +62,7 @@ Girilen hakem adına göre:
 
 bilgileri yine Transfermarkt üzerinden alınır.
 
-🎮 **Kullanım Adımları**
+## 🎮 **Kullanım Adımları**
 
 1️⃣**Video Yolunu Güncelleyin**
 
@@ -83,7 +83,7 @@ Sistem, forma renklerini analiz ederek takımları sınıflandırır. Hakem bilg
 Güncelle butonuyla sahadaki taktiksel harita güncellenir
 🛠 Eğer takım eşleşmeleri yanlışsa sadece takım isimlerini değiştirmeniz yeterlidir.
 
-📽️ Demo: Analiz Çıktısı
+## 📽️ **Demo: Analiz Çıktısı**
 
 🔍 **Taktiksel Harita ve Oyuncu Takibi**
 
