@@ -7,6 +7,7 @@ Hakem bilgilerini ve takım istatistiklerini web'den çeker
 💡 Kullanıcı, sadece takım isimlerini, forma örneklerini ve hakem isimlerini girerek analizi başlatabilir.
 
 🧠 Tanımlanan Sınıflar (Classes)
+
 Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
 🧤 Kaleci
 👟 Oyuncu
@@ -18,6 +19,7 @@ Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
 📊 Otomatik Bilgi Çekimi
 
 🟦 Takım Bilgileri
+
 Girilen takım isimlerine göre:
 Takım Logosu
 Lig bilgisi
@@ -29,6 +31,7 @@ Kazanılan kupalar
 Transfermarkt'tan çekilerek arayüzde gösterilir.
 
 🟨 Hakem Bilgileri
+
 Girilen hakem adına göre:
 Hakem fotoğrafı
 Doğum yeri
@@ -53,6 +56,7 @@ Hakem adını yazın
 Sistem, forma renklerini analiz ederek takımları sınıflandırır. Hakem bilgilerini Transfermarkt’tan çeker.
 
 3️⃣ Özeti Başlatın ve Güncelleyin
+
 Özeti Başlat butonuyla analiz başlar
 Güncelle butonuyla sahadaki taktiksel harita güncellenir
 🛠 Eğer takım eşleşmeleri yanlışsa sadece takım isimlerini değiştirmeniz yeterlidir.
