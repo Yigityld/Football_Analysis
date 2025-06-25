@@ -1,4 +1,4 @@
-#**[TR]** ⚽ **Football Match Analyzer (Demo)**
+# **[TR]** ⚽ **Football Match Analyzer (Demo)**
 Bu proje, futbol karşılaşmalarının analizini gerçekleştirmek için yapay zekâ destekli görsel analiz teknikleri ile geliştirilmiştir. Sistem, bir futbol maç videosu üzerinden:
 Sahadaki tüm oyuncu, kaleci, hakem ve teknik ekip üyelerini tespit eder
 Takımları forma rengine göre otomatik olarak ayırır
