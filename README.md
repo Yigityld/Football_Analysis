@@ -1,4 +1,4 @@
-# ⚽ **Football Match Analyzer (Demo)**
+#**[TR]** ⚽ **Football Match Analyzer (Demo)**
 Bu proje, futbol karşılaşmalarının analizini gerçekleştirmek için yapay zekâ destekli görsel analiz teknikleri ile geliştirilmiştir. Sistem, bir futbol maç videosu üzerinden:
 Sahadaki tüm oyuncu, kaleci, hakem ve teknik ekip üyelerini tespit eder
 Takımları forma rengine göre otomatik olarak ayırır
@@ -42,6 +42,8 @@ Girilen takım isimlerine göre:
 
 -Kazanılan kupalar
 
+- İki takımın aralarında (varsa)son 5 Maç Sonucu 
+
 Transfermarkt'tan çekilerek arayüzde gösterilir.
 
 🟨 **Hakem Bilgileri**
@@ -81,13 +83,14 @@ Sistem, forma renklerini analiz ederek takımları sınıflandırır. Hakem bilg
 
 Özeti Başlat butonuyla analiz başlar
 Güncelle butonuyla sahadaki taktiksel harita güncellenir
-🛠 Eğer takım eşleşmeleri yanlışsa sadece takım isimlerini değiştirmeniz yeterlidir.
+**🛠 Eğer takım eşleşmeleri yanlışsa sadece takım isimlerini değiştirmeniz yeterlidir.**
 
 ## 📽️ **Demo: Analiz Çıktısı**
 
 🔍 **Taktiksel Harita ve Oyuncu Takibi**
 
-🎯 Aşağıda sistemin Kayserispor ve Samsunspor takımlarını, kalecileri, hakem ve teknik ekibi başarıyla ayırt ettiğini görebilirsiniz.
-![Gif_Çıktı (1)](https://github.com/user-attachments/assets/41fc0c5f-764d-439c-bb14-7577545c9614)
+🎯 Aşağıda sistemin Kayserispor ve Samsunspor takımlarını, kalecileri, hakem ve teknik ekibi başarıyla ayırt ettiğini aryıca arayüzde hakem bilgilerini, takım bilgilerini, Kayserispor ve Samsunspor arasındaki son 5 maçı da görebilirsiniz.
+![OutputTR (1)](https://github.com/user-attachments/assets/3df6d701-4186-48b5-8d07-b9a86b6367b1)
+
 
 
