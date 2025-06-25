@@ -21,31 +21,39 @@ Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
 🟦 **Takım Bilgileri**
 
 Girilen takım isimlerine göre:
-Takım Logosu
 
-Lig bilgisi
+-Takım Logosu
 
-Lig sıralaması
+-Lig bilgisi
 
-Ortalama yaş
+-Lig sıralaması
 
-Takım değeri
+-Ortalama yaş
 
-Stadyum adı ve kapasitesi
+-Takım değeri
 
-Kazanılan kupalar
+-Stadyum adı ve kapasitesi
+
+-Kazanılan kupalar
 
 Transfermarkt'tan çekilerek arayüzde gösterilir.
 
 🟨 **Hakem Bilgileri**
 
 Girilen hakem adına göre:
-Hakem fotoğrafı
-Doğum yeri
-Doğum Tarihi
-Son sezon kart istatistikleri (Sarı / Kırmızı / İkinci sarıdan kırmızı)
-Son sezon penaltı istatistiği
-Maç sayısı
+
+-Hakem fotoğrafı
+
+-Doğum yeri
+
+-Doğum Tarihi
+
+-Son sezon kart istatistikleri (Sarı / Kırmızı / İkinci sarıdan kırmızı)
+
+-Son sezon penaltı istatistiği
+
+-Maç sayısı
+
 bilgileri yine Transfermarkt üzerinden alınır.
 
 🎮 **Kullanım Adımları**
