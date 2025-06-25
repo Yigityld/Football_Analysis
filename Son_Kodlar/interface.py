@@ -1,12 +1,95 @@
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButton, QFileDialog,
-                             QVBoxLayout, QHBoxLayout, QGroupBox, QFormLayout, QSpacerItem, QSizePolicy)
+                             QVBoxLayout, QHBoxLayout, QGroupBox, QFormLayout, QSpacerItem, QSizePolicy, QTextEdit)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap
 import sys
 import requests
 from bs4 import BeautifulSoup
 import re
+from datetime import datetime
 
+def get_last_matches(team_a, team_b):
+    def search_team_url(team_name):
+        query = team_name.replace(" ", "+")
+        search_url = f"https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query={query}"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(search_url, headers=headers)
+        soup = BeautifulSoup(response.text, "html.parser")
+        results = soup.select("a[href*='/startseite/verein/']")
+        for a in results:
+            if a.text.strip().lower() == team_name.lower():
+                return "https://www.transfermarkt.com.tr" + a['href']
+        if results:
+            return "https://www.transfermarkt.com.tr" + results[0]['href']
+        return None
+
+    def get_team_id_from_url(team_url):
+        match = re.search(r"/verein/(\d+)", team_url)
+        if match:
+            return match.group(1)
+        return None
+
+    def find_team_id(team_name):
+        url = search_team_url(team_name)
+        if url is None:
+            return None
+        return get_team_id_from_url(url)
+
+    team_a_id = find_team_id(team_a)
+    team_b_id = find_team_id(team_b)
+    if not team_a_id or not team_b_id:
+        return []
+
+    url = f"https://www.transfermarkt.com.tr/vergleich/bilanzdetail/verein/{team_a_id}/gegner_id/{team_b_id}"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        return []
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    table = soup.find("table", class_="items")
+    if not table:
+        return []
+
+    tbody = table.find("tbody")
+    rows = tbody.find_all("tr")
+    matches = []
+
+    for row in rows:
+        cols = row.find_all("td")
+        if len(cols) < 10:
+            continue
+        date_text = cols[6].get_text(strip=True)
+        try:
+            match_date = datetime.strptime(date_text, "%d.%m.%Y")
+        except ValueError:
+            continue
+        home_team = cols[10].find('a')['title'] if cols[10].find('a') else cols[10].get_text(strip=True)
+        guest_team = cols[8].find('a')['title'] if cols[8].find('a') else cols[8].get_text(strip=True)
+        result = cols[9].get_text(strip=True)
+
+        matches.append({
+            "date": match_date.strftime("%d.%m.%Y"),
+            "home_team": home_team,
+            "guest_team": guest_team,
+            "result": result
+        })
+
+    return matches[:5]  # max 5 maç
+
+
+# ==== Maç Geçmişi Çekici QThread ====
+class MatchHistoryFetcher(QThread):
+    finished = pyqtSignal(list)  # Maç listesi olarak gönderilecek
+
+    def __init__(self, team_a, team_b):
+        super().__init__()
+        self.team_a = team_a
+        self.team_b = team_b
+
+    def run(self):
+        matches = get_last_matches(self.team_a, self.team_b)
+        self.finished.emit(matches)
 
 # === Hakem Bilgisi Çekici ===
 class RefereeInfoFetcher(QThread):
@@ -184,7 +267,7 @@ class Interface(QWidget):
         super().__init__()
         self.pipe = pipe
         self.setWindowTitle("Futbol Arayüzü")
-        self.setGeometry(100, 100, 1000, 750)
+        self.setGeometry(100, 100, 1150, 800)
         self.setStyleSheet("""
             QWidget { background-color: #2E2E2E; color: #EAEAEA; font-family: 'Segoe UI'; font-size: 13px; }
             QGroupBox { font-weight: bold; border: 1px solid #555; border-radius: 8px; margin-top: 10px; padding: 15px; background-color: #3C3C3C; }
@@ -214,6 +297,15 @@ class Interface(QWidget):
             label.setFixedSize(100, 100)
             label.setStyleSheet("border: 1px solid #777;")
 
+        self.team_a_info.setWordWrap(True)
+        self.team_b_info.setWordWrap(True)
+
+        # Maç geçmişi için QTextEdit
+        self.match_history_label = QLabel("<b>Aralarındaki Son 5 Maç:</b>")
+        self.match_history_text = QTextEdit()
+        self.match_history_text.setReadOnly(True)
+        self.match_history_text.setFixedWidth(300)
+
         form_layout = QFormLayout()
         form_layout.addRow("Takım A Adı:", self.team_a_input)
         form_layout.addRow(self.team_a_button)
@@ -221,6 +313,7 @@ class Interface(QWidget):
         form_layout.addRow(self.team_b_button)
         form_layout.addRow("Ana Hakem:", self.main_ref_input)
         form_layout.addRow("Yan Hakem:", self.side_ref_input)
+
         update_button = QPushButton("Güncelle")
         update_button.clicked.connect(self.send_data)
         form_layout.addRow(update_button)
@@ -229,12 +322,18 @@ class Interface(QWidget):
         self.start_button.clicked.connect(self.start_summary)
         form_layout.addRow(self.start_button)
 
+        match_history_vbox = QVBoxLayout()
+        match_history_vbox.addWidget(self.match_history_label)
+        match_history_vbox.addWidget(self.match_history_text)
+        match_history_vbox.addStretch()
+
         hakem_hbox = QHBoxLayout()
         main_vbox, side_vbox = QVBoxLayout(), QVBoxLayout()
         main_vbox.addWidget(self.ref_info_main_image, alignment=Qt.AlignCenter)
         main_vbox.addWidget(self.ref_info_main_text)
         side_vbox.addWidget(self.ref_info_side_image, alignment=Qt.AlignCenter)
         side_vbox.addWidget(self.ref_info_side_text)
+
         hakem_hbox.addLayout(main_vbox)
         hakem_hbox.addLayout(side_vbox)
         form_layout.addRow("👨‍⚖️ Hakem Bilgileri:", QLabel())
@@ -252,9 +351,15 @@ class Interface(QWidget):
             team_info_vbox.addWidget(info)
             team_info_vbox.addSpacing(15)
 
+        top_hbox = QHBoxLayout()
+        top_hbox.addLayout(team_info_vbox)
+        top_hbox.addLayout(match_history_vbox)
+        top_hbox.addStretch()
+
         hbox = QHBoxLayout()
         hbox.addLayout(team_info_vbox)
         hbox.addLayout(main_layout)
+        hbox.addLayout(top_hbox)
         self.setLayout(hbox)
 
     def select_team_a_jersey(self):
@@ -291,6 +396,10 @@ class Interface(QWidget):
             self.team_b_thread.finished.connect(self.display_team_info)
             self.team_b_thread.start()
 
+        self.match_history_thread = MatchHistoryFetcher(self.team_a_input.text().strip(), self.team_b_input.text().strip())
+        self.match_history_thread.finished.connect(self.display_match_history)
+        self.match_history_thread.start()
+
         if self.main_ref_input.text():
             self.main_ref_thread = RefereeInfoFetcher(self.main_ref_input.text(), "main")
             self.main_ref_thread.finished.connect(self.display_ref_info)
@@ -300,6 +409,15 @@ class Interface(QWidget):
             self.side_ref_thread = RefereeInfoFetcher(self.side_ref_input.text(), "side")
             self.side_ref_thread.finished.connect(self.display_ref_info)
             self.side_ref_thread.start()
+
+    def display_match_history(self, matches):
+        if not matches:
+            self.match_history_text.setText("Maç bulunamadı.")
+            return
+        text = ""
+        for m in matches:
+            text += f"{m['date']}: {m['guest_team']} vs {m['home_team']} - {m['result']}\n"
+        self.match_history_text.setText(text)
 
     def display_ref_info(self, html, pixmap, ref_type):
         label, image = (self.ref_info_main_text, self.ref_info_main_image) if ref_type == "main" else (self.ref_info_side_text, self.ref_info_side_image)

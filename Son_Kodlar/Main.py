@@ -57,7 +57,7 @@ def main(pipe):
                 print("✅ Özet başlatılıyor...")
                 break
     model = YOLO("..//model/bestdeneme.pt")
-    cap = cv2.VideoCapture("..//Video//Galatasaray_Konyaspor.mp4")
+    cap = cv2.VideoCapture("..//Videos//Kayseri_Samsunspor.mp4")
 
     class_names = ['Player', 'GoalKeeper', 'Ball', 'Main Referee', 'Side Referee', 'Staff Member']
     class_thresholds = {
@@ -204,7 +204,7 @@ def main(pipe):
             cv2.putText(annotated, f"Ball", (x1, y1 - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-        resized = cv2.resize(annotated, (960, 540))
+        resized = cv2.resize(annotated, (760, 640))
         cv2.imshow("Match Viewer", resized)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
