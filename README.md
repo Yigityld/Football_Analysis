@@ -21,13 +21,20 @@ Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
 🟦 **Takım Bilgileri**
 
 Girilen takım isimlerine göre:
-Takım Logosu/n
-Lig bilgisi/n
+Takım Logosu
+
+Lig bilgisi
+
 Lig sıralaması
+
 Ortalama yaş
+
 Takım değeri
+
 Stadyum adı ve kapasitesi
+
 Kazanılan kupalar
+
 Transfermarkt'tan çekilerek arayüzde gösterilir.
 
 🟨 **Hakem Bilgileri**
