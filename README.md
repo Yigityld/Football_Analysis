@@ -21,8 +21,8 @@ Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
 🟦 **Takım Bilgileri**
 
 Girilen takım isimlerine göre:
-Takım Logosu
-Lig bilgisi
+Takım Logosu/n
+Lig bilgisi/n
 Lig sıralaması
 Ortalama yaş
 Takım değeri
