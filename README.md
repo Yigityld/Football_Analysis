@@ -22,7 +22,7 @@ Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
 
 🧠 Teknik Ekip
 
-📊 **Otomatik Bilgi Çekimi**
+## 📊 **Otomatik Bilgi Çekimi**
 
 🟦 **Takım Bilgileri**
 
