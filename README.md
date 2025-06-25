@@ -16,6 +16,7 @@ Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
 🧠 Teknik Ekip
 
 📊 Otomatik Bilgi Çekimi
+
 🟦 Takım Bilgileri
 Girilen takım isimlerine göre:
 Takım Logosu
@@ -38,6 +39,7 @@ Maç sayısı
 bilgileri yine Transfermarkt üzerinden alınır.
 
 🎮 Kullanım Adımları
+
 1️⃣ Video Yolunu Güncelleyin
 main.py dosyasındaki video_path değişkenini düzenleyin:
 
@@ -56,6 +58,7 @@ Güncelle butonuyla sahadaki taktiksel harita güncellenir
 🛠 Eğer takım eşleşmeleri yanlışsa sadece takım isimlerini değiştirmeniz yeterlidir.
 
 📽️ Demo: Analiz Çıktısı
+
 🔍 Taktiksel Harita ve Oyuncu Takibi
 🎯 Aşağıda sistemin Kayserispor ve Samsunspor takımlarını, kalecileri, hakem ve teknik ekibi başarıyla ayırt ettiğini görebilirsiniz.
 ![Gif_Çıktı (1)](https://github.com/user-attachments/assets/41fc0c5f-764d-439c-bb14-7577545c9614)
