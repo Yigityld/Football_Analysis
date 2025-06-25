@@ -192,6 +192,7 @@ class Interface(QWidget):
             QPushButton { background-color: #4CAF50; border: none; border-radius: 6px; color: white; padding: 8px 14px; margin-top: 10px; }
             QPushButton:hover { background-color: #45A049; }
             QLabel { font-weight: normal; }
+            QTextEdit { background-color:#1E1E1E; color:#EAEAEA; border:1px solid #555; }
         """)
 
         self.team_a_input, self.team_b_input = QLineEdit(), QLineEdit()
