@@ -19,7 +19,9 @@ Using the YOLOv8 object detection model, the system identifies 6 different class
 🧠 Technical Staff
 
 ## **📊 Automatic Data Retrieval**
+
 **🟦 Team Information**
+
 Based on the entered team names:
 
 Team Logo
@@ -41,6 +43,7 @@ Last 5 Head-to-Head Matches (if available)
 Information is retrieved from Transfermarkt and shown on the interface.
 
 **🟨 Referee Information**
+
 Based on the entered referee name:
 
 Referee Photo
@@ -60,9 +63,11 @@ This data is also pulled from Transfermarkt.
 ## **🎮 Usage Steps**
 
 **1️⃣ Update the Video Path**
+
 In main.py, edit the video_path variable:
 
 video_path = "videos/match-footage.mp4"
+
 **2️⃣ Launch the Interface**
 
 Enter Team A and Team B names
@@ -70,6 +75,7 @@ Enter Team A and Team B names
 Select jersey samples for both teams
 
 Enter referee name
+
 The system classifies teams based on jersey color analysis and fetches referee info from Transfermarkt.
 
 **3️⃣ Start and Update the Summary**
@@ -83,7 +89,7 @@ Use the Update button to refresh the tactical map
 ## **📽️ Demo: Analysis Output**
 
 **🔍 Tactical Map and Player Tracking**
-🎯 Below you can see how the system successfully distinguishes Kayserispor and Samsunspor teams, their goalkeepers, referees, and technical staff. The interface also displays referee details, team stats, and the last 5 head-to-head matches between Kayserispor and Samsunspor.
+🎯 Below you can see how the system successfully distinguishes Arsenal and Manchester United teams, their goalkeepers, referees, and staff member. The interface also displays referee details, team stats, and the last 5 head-to-head matches between Arsenal and Manchester United.
 ![OutputEn](https://github.com/user-attachments/assets/4bc8bb6d-fe91-46f2-b0d9-d606078a9bf9)
 
 
