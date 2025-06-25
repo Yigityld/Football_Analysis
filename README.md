@@ -9,11 +9,17 @@ Hakem bilgilerini ve takım istatistiklerini web'den çeker
 🧠 **Tanımlanan Sınıflar (Classes)**
 
 Sistem, YOLOv8 nesne tespiti modeli ile 6 farklı sınıfı tanımlar:
+
 🧤 Kaleci
+
 👟 Oyuncu
+
 🟨 Orta Hakem
+
 🟥 Yan Hakem
+
 ⚽ Top
+
 🧠 Teknik Ekip
 
 📊 **Otomatik Bilgi Çekimi**
