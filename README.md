@@ -64,6 +64,7 @@ Güncelle butonuyla sahadaki taktiksel harita güncellenir
 📽️ Demo: Analiz Çıktısı
 
 🔍 Taktiksel Harita ve Oyuncu Takibi
+
 🎯 Aşağıda sistemin Kayserispor ve Samsunspor takımlarını, kalecileri, hakem ve teknik ekibi başarıyla ayırt ettiğini görebilirsiniz.
 ![Gif_Çıktı (1)](https://github.com/user-attachments/assets/41fc0c5f-764d-439c-bb14-7577545c9614)
 
