@@ -44,6 +44,7 @@ bilgileri yine Transfermarkt üzerinden alınır.
 🎮 **Kullanım Adımları**
 
 1️⃣**Video Yolunu Güncelleyin**
+
 main.py dosyasındaki video_path değişkenini düzenleyin:
 
 video_path = "videos/match-footage.mp4"
