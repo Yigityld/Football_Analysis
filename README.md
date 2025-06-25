@@ -58,6 +58,7 @@ Number of Matches
 This data is also pulled from Transfermarkt.
 
 ## **🎮 Usage Steps**
+
 **1️⃣ Update the Video Path**
 In main.py, edit the video_path variable:
 
@@ -76,9 +77,11 @@ The system classifies teams based on jersey color analysis and fetches referee i
 Click the Start Summary button to begin the analysis
 
 Use the Update button to refresh the tactical map
+
 **🛠 If team assignments are incorrect, just change the team names.**
 
 ## **📽️ Demo: Analysis Output**
+
 **🔍 Tactical Map and Player Tracking**
 🎯 Below you can see how the system successfully distinguishes Kayserispor and Samsunspor teams, their goalkeepers, referees, and technical staff. The interface also displays referee details, team stats, and the last 5 head-to-head matches between Kayserispor and Samsunspor.
 ![OutputEn](https://github.com/user-attachments/assets/4bc8bb6d-fe91-46f2-b0d9-d606078a9bf9)
