@@ -1,0 +1,1 @@
+YOLOv8 tabanlı bu sistem, futbol maç videolarında oyuncu, top ve hakem tespiti yapar. Forma renklerine göre takımları ayırır, arayüz üzerinden girilen takım ve hakem bilgilerini videoda gösterir. PyQt5 arayüzü ve OpenCV ile gerçek zamanlı analiz sunar.
