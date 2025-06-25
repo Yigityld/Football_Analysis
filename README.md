@@ -61,9 +61,6 @@ This data is also pulled from Transfermarkt.
 **1️⃣ Update the Video Path**
 In main.py, edit the video_path variable:
 
-python
-Kopyala
-Düzenle
 video_path = "videos/match-footage.mp4"
 **2️⃣ Launch the Interface**
 
