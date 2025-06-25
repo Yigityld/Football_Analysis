@@ -1,3 +1,99 @@
+# **[EN] ⚽ Football Match Analyzer (Demo)**
+This project is developed using AI-powered visual analysis techniques to analyze football match footage. The system performs the following on a football match video:
+
+Detects all players, goalkeepers, referees, and technical staff on the field
+
+Automatically separates teams based on jersey colors
+
+Retrieves referee and team statistics from the web
+
+💡 The user only needs to enter the team names, jersey samples, and referee name to start the analysis.
+
+## **🧠 Defined Classes**
+Using the YOLOv8 object detection model, the system identifies 6 different classes:
+🧤 Goalkeeper
+👟 Player
+🟨 Main Referee
+🟥 Assistant Referee
+⚽ Ball
+🧠 Technical Staff
+
+## **📊 Automatic Data Retrieval**
+**🟦 Team Information**
+Based on the entered team names:
+
+Team Logo
+
+League Info
+
+League Ranking
+
+Average Age
+
+Team Value
+
+Stadium Name & Capacity
+
+Trophies Won
+
+Last 5 Head-to-Head Matches (if available)
+
+Information is retrieved from Transfermarkt and shown on the interface.
+
+**🟨 Referee Information**
+Based on the entered referee name:
+
+Referee Photo
+
+Place of Birth
+
+Date of Birth
+
+Card Statistics for Last Season (Yellow / Red / Second Yellow-Red)
+
+Penalty Stats for Last Season
+
+Number of Matches
+
+This data is also pulled from Transfermarkt.
+
+## **🎮 Usage Steps**
+**1️⃣ Update the Video Path**
+In main.py, edit the video_path variable:
+
+python
+Kopyala
+Düzenle
+video_path = "videos/match-footage.mp4"
+**2️⃣ Launch the Interface**
+
+Enter Team A and Team B names
+
+Select jersey samples for both teams
+
+Enter referee name
+The system classifies teams based on jersey color analysis and fetches referee info from Transfermarkt.
+
+**3️⃣ Start and Update the Summary**
+
+Click the Start Summary button to begin the analysis
+
+Use the Update button to refresh the tactical map
+**🛠 If team assignments are incorrect, just change the team names.**
+
+## **📽️ Demo: Analysis Output**
+**🔍 Tactical Map and Player Tracking**
+🎯 Below you can see how the system successfully distinguishes Kayserispor and Samsunspor teams, their goalkeepers, referees, and technical staff. The interface also displays referee details, team stats, and the last 5 head-to-head matches between Kayserispor and Samsunspor.
+![OutputEn](https://github.com/user-attachments/assets/4bc8bb6d-fe91-46f2-b0d9-d606078a9bf9)
+
+
+
+
+
+
+
+
+
 # **[TR]** ⚽ **Football Match Analyzer (Demo)**
 Bu proje, futbol karşılaşmalarının analizini gerçekleştirmek için yapay zekâ destekli görsel analiz teknikleri ile geliştirilmiştir. Sistem, bir futbol maç videosu üzerinden:
 Sahadaki tüm oyuncu, kaleci, hakem ve teknik ekip üyelerini tespit eder
