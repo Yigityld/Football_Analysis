@@ -2,11 +2,11 @@
 This project is developed using AI-powered visual analysis techniques to analyze football match videos. The system:
 
 - Detects all players, goalkeepers, referees, and technical staff on the field
--  
+  
 - Automatically separates teams based on jersey colors
-- 
+  
 - Retrieves referee and team statistics from the web
-- 
+  
 - Provides match score prediction based on teams’ past data via FootballGPT  
 
 💡 The user only needs to enter the team names, jersey samples, and referee name to start the analysis.
