@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from datetime import datetime
-
+import Gpt_area
 
 def search_team_url(team_name):
     query = team_name.replace(" ", "+")
@@ -17,8 +17,14 @@ def search_team_url(team_name):
     soup = BeautifulSoup(response.text, "html.parser")
     results = soup.select("a[href*='/startseite/verein/']")
     for a in results:
-        if a.text.strip().lower() == team_name.lower():
-            return "https://www.transfermarkt.com.tr" + a['href']
+        img = a.find("img")
+        if img and img.get("alt"):
+            alt_text = img["alt"].strip().lower()
+            if team_name.lower() in alt_text:
+                return "https://www.transfermarkt.com.tr" + a["href"]
+        else:
+            if a.text.strip().lower() == team_name.lower():
+                return "https://www.transfermarkt.com.tr" + a['href']
     if results:
         return "https://www.transfermarkt.com.tr" + results[0]['href']
     return None
@@ -50,6 +56,13 @@ def get_match_result_emoji(team_score, opponent_score):
     else:
         return "❌"  # mağlubiyet
 
+def team_name_Temizle(team_name):
+    name = team_name.lower().strip()
+
+    import re
+    name = re.sub(r'\bfc\b', '', name)  # fc'yi tam kelime olarak çıkar
+    name = name.strip()  # Son boşlukları temizle
+    return name
 
 # 2. Takımın son 5 maçını (diziliş + skor) getir
 def get_team_last_5_matches_with_tactics(team_name):
@@ -79,8 +92,8 @@ def get_team_last_5_matches_with_tactics(team_name):
                 parts = skor.split(":")
                 rakip = cols[6].get_text(strip=True)
                 emoji = ""  # Her döngüde sıfırla
-
-                if temizle_takim_adi(rakip) == team_name.lower():
+                # team_deneme = team_name.lower.split(" ")
+                if temizle_takim_adi(rakip) == team_name_Temizle(team_name):
                     rakip = cols[4].get_text(strip=True)
                     if len(parts) == 2:
                         rakip_gol, takim_gol = int(parts[0]), int(parts[1])
@@ -164,6 +177,9 @@ def get_last_matches(team_a, team_b):
         home_team = cols[10].find('a')['title'] if cols[10].find('a') else cols[10].get_text(strip=True)
         guest_team = cols[8].find('a')['title'] if cols[8].find('a') else cols[8].get_text(strip=True)
         result = cols[9].get_text(strip=True)
+        parts = result.split(":")
+        if parts[0] == "-":
+            continue
 
         matches.append({
             "date": match_date.strftime("%d.%m.%Y"),
@@ -240,31 +256,68 @@ class RefereeInfoFetcher(QThread):
                 birthplace = span.text.strip()
                 break
 
+        try:
+            form = soup.find("form", action=lambda x: x and "/profil/schiedsrichter" in x)
+            action_url = form["action"]
+            full_url = "https://www.transfermarkt.com.tr" + action_url
+            saison_select = form.select_one("select[name='saison_id']")
+            saison_options = saison_select.find_all("option")
+
+            season_id = None
+            for option in saison_options:
+                if season in option.text:
+                    season_id = option["value"]
+                    break
+
+            if season_id:
+                data = {
+                    "funktion": "1",  # Hakem
+                    "saison_id": season_id
+                }
+                stats_resp = requests.post(full_url, headers=headers, data=data)
+                stats_soup = BeautifulSoup(stats_resp.text, "html.parser")
+
+                stats_table = stats_soup.find("table", class_="items")
+            else:
+                stats_table = None
+        except Exception as e:
+            stats_table = None
+
+            # 4. İstatistikleri çek
         stats = {"Maç": 0, "Sarı Kart": 0, "2. Sarıdan Kırmızı": 0, "Direkt Kırmızı": 0, "Penaltı": 0}
-        table = soup.find("table", class_="items")
-        if table:
-            tbody = table.find("tbody")
+        if stats_table:
+            tbody = stats_table.find("tbody")
             for row in tbody.find_all("tr"):
                 cols = row.find_all("td")
                 if len(cols) >= 7:
-                    try: stats["Maç"] += int(cols[2].text.strip())
-                    except: pass
-                    try: stats["Sarı Kart"] += int(cols[3].text.strip())
-                    except: pass
-                    try: stats["2. Sarıdan Kırmızı"] += int(cols[4].text.strip())
-                    except: pass
-                    try: stats["Direkt Kırmızı"] += int(cols[5].text.strip())
-                    except: pass
-                    try: stats["Penaltı"] += int(cols[6].text.strip())
-                    except: pass
+                    try:
+                        stats["Maç"] += int(cols[2].text.strip())
+                    except:
+                        pass
+                    try:
+                        stats["Sarı Kart"] += int(cols[3].text.strip())
+                    except:
+                        pass
+                    try:
+                        stats["2. Sarıdan Kırmızı"] += int(cols[4].text.strip())
+                    except:
+                        pass
+                    try:
+                        stats["Direkt Kırmızı"] += int(cols[5].text.strip())
+                    except:
+                        pass
+                    try:
+                        stats["Penaltı"] += int(cols[6].text.strip())
+                    except:
+                        pass
 
         html = f"""
-        <b>📋 Hakem:</b> {name.title()}<br>
-        <b>🎂 Doğum Tarihi/Yaş:</b> {dob}<br>
-        <b>📍 Doğum Yeri:</b> {birthplace}<br>
-        <b>📊 {season} Sezonu İstatistikleri:</b><br>
-        {''.join([f"{k}: {v}<br>" for k, v in stats.items()])}
-        """
+           <b>📋 Hakem:</b> {name.title()}<br>
+           <b>🎂 Doğum Tarihi/Yaş:</b> {dob}<br>
+           <b>📍 Doğum Yeri:</b> {birthplace}<br>
+           <b>📊 {season} Sezonu İstatistikleri:</b><br>
+           {''.join([f"{k}: {v}<br>" for k, v in stats.items()])}
+           """
         return html, img_pixmap
 
 
@@ -296,8 +349,14 @@ class TeamInfoFetcher(QThread):
         soup = BeautifulSoup(response.text, "html.parser")
         results = soup.select("a[href*='/startseite/verein/']")
         for a in results:
-            if a.text.strip().lower() == team_name.lower():
-                return "https://www.transfermarkt.com.tr" + a['href']
+            img = a.find("img")
+            if img and img.get("alt"):
+                alt_text = img["alt"].strip().lower()
+                if team_name.lower() in alt_text:
+                    return "https://www.transfermarkt.com.tr" + a["href"]
+            else:
+                if a.text.strip().lower() == team_name.lower():
+                    return "https://www.transfermarkt.com.tr" + a['href']
         if results:
             return "https://www.transfermarkt.com.tr" + results[0]['href']
         return None
@@ -376,13 +435,30 @@ class Interface(QWidget):
         super().__init__()
         self.pipe = pipe
         self.setWindowTitle("Futbol Arayüzü")
-        self.setGeometry(100, 100, 1150, 800)
+        self.setGeometry(100, 100, 1550, 800)
         self.setStyleSheet("""
             QWidget { background-color: #2E2E2E; color: #EAEAEA; font-family: 'Segoe UI'; font-size: 13px; }
             QGroupBox { font-weight: bold; border: 1px solid #555; border-radius: 8px; margin-top: 10px; padding: 15px; background-color: #3C3C3C; }
             QLineEdit { background-color: #1E1E1E; color: white; border: 1px solid #555; border-radius: 4px; padding: 5px; }
             QPushButton { background-color: #4CAF50; border: none; border-radius: 6px; color: white; padding: 8px 14px; margin-top: 10px; }
             QPushButton:hover { background-color: #45A049; }
+          QPushButton#blueButton {
+    background-color: #2196F3;
+    border: none;
+    border-radius: 15px;       /* Daha yuvarlak, ama çok aşırı değil */
+    color: white;
+    padding: 1px 1px;          /* Daha küçük ve kompakt */
+    font-weight: bold;
+    font-size: 12px;            /* Daha küçük yazı */
+    min-width: 30px;            /* Minimum genişlik, çok küçülmesin */
+    min-height: 30px;     
+     max-width: 300px;      /* Maksimum da küçük olsun */
+    max-height: 75px;/* Minimum yükseklik, çok ince olmasın */
+}
+
+QPushButton#blueButton:hover {
+    background-color: #1976D2;
+}
             QLabel { font-weight: normal; }
             QTextEdit { background-color:#1E1E1E; color:#EAEAEA; border:1px solid #555; }
         """)
@@ -413,21 +489,21 @@ class Interface(QWidget):
         self.match_history_label = QLabel("<b>Aralarındaki Son 5 Maç:</b>")
         self.match_history_text = QTextEdit()
         self.match_history_text.setReadOnly(True)
-        self.match_history_text.setFixedWidth(300)
-        self.match_history_text.setFixedHeight(150)  # yüksekliği küçülttüm
+        self.match_history_text.setFixedWidth(400)
+        self.match_history_text.setFixedHeight(180)  # yüksekliği küçülttüm
 
         # Takım A ve B Son 5 maç metin kutuları
         self.team_a_last_label = QLabel("")  # Dinamik olarak doldurulacak
         self.team_a_last_text = QTextEdit()
         self.team_a_last_text.setReadOnly(True)
         self.team_a_last_text.setFixedWidth(400)
-        self.team_a_last_text.setFixedHeight(220)
+        self.team_a_last_text.setFixedHeight(180)
 
         self.team_b_last_label = QLabel("")
         self.team_b_last_text = QTextEdit()
         self.team_b_last_text.setReadOnly(True)
         self.team_b_last_text.setFixedWidth(400)
-        self.team_b_last_text.setFixedHeight(220)
+        self.team_b_last_text.setFixedHeight(180)
 
         form_layout = QFormLayout()
         form_layout.addRow("Takım A Adı:", self.team_a_input)
@@ -490,9 +566,30 @@ class Interface(QWidget):
         top_hbox.addLayout(match_and_last_vbox)
         top_hbox.addStretch()
 
+        self.predict_button = QPushButton("PredictFutureMatchWithFootballGPT")
+        self.predict_button.setObjectName("blueButton")
+        self.predict_button.clicked.connect(self.predict_match)
+
+        self.prediction_result = QTextEdit()
+        self.prediction_result.setReadOnly(True)
+        self.prediction_result.setFixedWidth(300)
+        self.prediction_result.setFixedHeight(60)
+
+        input_layout = QVBoxLayout()
+        input_layout.addWidget(self.predict_button)
+        input_layout.addWidget(QLabel("GPT Tahmin Sonucu:"))
+        input_layout.addWidget(self.prediction_result)
+        """
+        input_widget = QWidget()
+        input_widget.setLayout(input_layout)
+        """
+        match_and_last_vbox.addSpacing(15)  # Son 5 maçlar ile araya boşluk
+        match_and_last_vbox.addLayout(input_layout)
+
         hbox = QHBoxLayout()
         hbox.addLayout(main_layout)
         hbox.addLayout(top_hbox)
+        # hbox.addWidget(input_widget, alignment=Qt.AlignTop)
         self.setLayout(hbox)
 
     def select_team_a_jersey(self):
@@ -503,6 +600,20 @@ class Interface(QWidget):
 
     def start_summary(self):
         self.pipe.send({'start_summary': True})
+
+    def predict_match(self):
+        team_a = self.team_a_input.text().strip()
+        team_b = self.team_b_input.text().strip()
+        if not team_a or not team_b:
+            self.prediction_result.setText("Lütfen iki takım adını da giriniz.")
+            return
+
+        self.prediction_result.setText("Tahmin yapılıyor, lütfen bekleyin...")
+
+        # Burada gpt.py'deki predict_match fonksiyonunu çağırıyoruz
+        sonuc = Gpt_area.predict_match(team_a, team_b)
+
+        self.prediction_result.setText(sonuc)
 
     def select_team_b_jersey(self):
         file_name, _ = QFileDialog.getOpenFileName(self, "Takım B Forması", "", "Images (*.png *.jpg *.jpeg)")
