@@ -51,8 +51,8 @@ def team_name_Temizle(team_name):
     name = team_name.lower().strip()
 
     import re
-    name = re.sub(r'\bfc\b', '', name)  # fc'yi tam kelime olarak çıkar
-    name = name.strip()  # Son boşlukları temizle
+    name = re.sub(r'\bfc\b', '', name)
+    name = name.strip()
     return name
 
 # --- Takımın son 5 maçını (diziliş + skor) getir ---

@@ -60,8 +60,8 @@ def team_name_Temizle(team_name):
     name = team_name.lower().strip()
 
     import re
-    name = re.sub(r'\bfc\b', '', name)  # fc'yi tam kelime olarak çıkar
-    name = name.strip()  # Son boşlukları temizle
+    name = re.sub(r'\bfc\b', '', name)
+    name = name.strip()
     return name
 
 # 2. Takımın son 5 maçını (diziliş + skor) getir
@@ -188,12 +188,12 @@ def get_last_matches(team_a, team_b):
             "result": result
         })
 
-    return matches[:5]  # max 5 maç
+    return matches[:5]
 
 
 # ==== Maç Geçmişi Çekici QThread ====
 class MatchHistoryFetcher(QThread):
-    finished = pyqtSignal(list)  # Maç listesi olarak gönderilecek
+    finished = pyqtSignal(list)
 
     def __init__(self, team_a, team_b):
         super().__init__()
@@ -206,7 +206,7 @@ class MatchHistoryFetcher(QThread):
 
 # === Hakem Bilgisi Çekici ===
 class RefereeInfoFetcher(QThread):
-    finished = pyqtSignal(str, QPixmap, str)  # HTML metin, foto, referee tipi
+    finished = pyqtSignal(str, QPixmap, str)
 
     def __init__(self, name, referee_type="main", season="2024"):
         super().__init__()
@@ -323,7 +323,7 @@ class RefereeInfoFetcher(QThread):
 
 # === Takım Bilgisi Çekici ===
 class TeamInfoFetcher(QThread):
-    finished = pyqtSignal(dict, QPixmap, str)  # info dict, logo pixmap, "A" or "B"
+    finished = pyqtSignal(dict, QPixmap, str)
 
     def __init__(self, team_name, team_type="A"):
         super().__init__()
@@ -417,7 +417,7 @@ class TeamInfoFetcher(QThread):
         }
 
 class TeamLastMatchesFetcher(QThread):
-    finished = pyqtSignal(list, str)  # matches, team_type ("A" veya "B")
+    finished = pyqtSignal(list, str)
 
     def __init__(self, team_name, team_type):
         super().__init__()
@@ -445,15 +445,15 @@ class Interface(QWidget):
           QPushButton#blueButton {
     background-color: #2196F3;
     border: none;
-    border-radius: 15px;       /* Daha yuvarlak, ama çok aşırı değil */
+    border-radius: 15px;       
     color: white;
-    padding: 1px 1px;          /* Daha küçük ve kompakt */
+    padding: 1px 1px;          
     font-weight: bold;
-    font-size: 12px;            /* Daha küçük yazı */
-    min-width: 30px;            /* Minimum genişlik, çok küçülmesin */
+    font-size: 12px;            
+    min-width: 30px;            
     min-height: 30px;     
-     max-width: 300px;      /* Maksimum da küçük olsun */
-    max-height: 75px;/* Minimum yükseklik, çok ince olmasın */
+     max-width: 300px;      
+    max-height: 75px;
 }
 
 QPushButton#blueButton:hover {
@@ -490,10 +490,10 @@ QPushButton#blueButton:hover {
         self.match_history_text = QTextEdit()
         self.match_history_text.setReadOnly(True)
         self.match_history_text.setFixedWidth(400)
-        self.match_history_text.setFixedHeight(180)  # yüksekliği küçülttüm
+        self.match_history_text.setFixedHeight(180)
 
         # Takım A ve B Son 5 maç metin kutuları
-        self.team_a_last_label = QLabel("")  # Dinamik olarak doldurulacak
+        self.team_a_last_label = QLabel("")
         self.team_a_last_text = QTextEdit()
         self.team_a_last_text.setReadOnly(True)
         self.team_a_last_text.setFixedWidth(400)
@@ -583,7 +583,7 @@ QPushButton#blueButton:hover {
         input_widget = QWidget()
         input_widget.setLayout(input_layout)
         """
-        match_and_last_vbox.addSpacing(15)  # Son 5 maçlar ile araya boşluk
+        match_and_last_vbox.addSpacing(15)  
         match_and_last_vbox.addLayout(input_layout)
 
         hbox = QHBoxLayout()
