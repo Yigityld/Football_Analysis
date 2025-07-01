@@ -8,32 +8,129 @@ from bs4 import BeautifulSoup
 import re
 from datetime import datetime
 
-def get_last_matches(team_a, team_b):
-    def search_team_url(team_name):
-        query = team_name.replace(" ", "+")
-        search_url = f"https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query={query}"
+
+def search_team_url(team_name):
+    query = team_name.replace(" ", "+")
+    search_url = f"https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query={query}"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = requests.get(search_url, headers=headers)
+    soup = BeautifulSoup(response.text, "html.parser")
+    results = soup.select("a[href*='/startseite/verein/']")
+    for a in results:
+        if a.text.strip().lower() == team_name.lower():
+            return "https://www.transfermarkt.com.tr" + a['href']
+    if results:
+        return "https://www.transfermarkt.com.tr" + results[0]['href']
+    return None
+
+
+def get_team_id_from_url(team_url):
+    match = re.search(r"/verein/(\d+)", team_url)
+    if match:
+        return match.group(1)
+    return None
+
+
+def find_team_id(team_name):
+    url = search_team_url(team_name)
+    if url is None:
+        return None
+    return get_team_id_from_url(url)
+
+
+def temizle_takim_adi(adi):
+    return re.sub(r"\(.*?\)", "", adi).strip().lower()
+
+
+def get_match_result_emoji(team_score, opponent_score):
+    if team_score > opponent_score:
+        return "✅"  # galibiyet
+    elif team_score == opponent_score:
+        return "🤝"  # beraberlik
+    else:
+        return "❌"  # mağlubiyet
+
+
+# 2. Takımın son 5 maçını (diziliş + skor) getir
+def get_team_last_5_matches_with_tactics(team_name):
+
+    def fetch_matches_from_url(url):
         headers = {"User-Agent": "Mozilla/5.0"}
-        response = requests.get(search_url, headers=headers)
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            print("Fikstür sayfası açılamadı.")
+            return []
+
         soup = BeautifulSoup(response.text, "html.parser")
-        results = soup.select("a[href*='/startseite/verein/']")
-        for a in results:
-            if a.text.strip().lower() == team_name.lower():
-                return "https://www.transfermarkt.com.tr" + a['href']
-        if results:
-            return "https://www.transfermarkt.com.tr" + results[0]['href']
-        return None
+        tbody = soup.find("div", class_="responsive-table").find("tbody")
+        if not tbody:
+            print("Maç tablosu bulunamadı.")
+            return []
 
-    def get_team_id_from_url(team_url):
-        match = re.search(r"/verein/(\d+)", team_url)
-        if match:
-            return match.group(1)
-        return None
+        matches = []
+        rows = tbody.find_all("tr")
+        for row in rows:
+            cols = row.find_all("td")
+            if not cols or len(cols) < 10:
+                continue
+            try:
+                tarih = cols[1].get_text(strip=True)
+                skor = cols[-1].get_text(strip=True)
+                parts = skor.split(":")
+                rakip = cols[6].get_text(strip=True)
+                emoji = ""  # Her döngüde sıfırla
 
-    def find_team_id(team_name):
-        url = search_team_url(team_name)
-        if url is None:
-            return None
-        return get_team_id_from_url(url)
+                if temizle_takim_adi(rakip) == team_name.lower():
+                    rakip = cols[4].get_text(strip=True)
+                    if len(parts) == 2:
+                        rakip_gol, takim_gol = int(parts[0]), int(parts[1])
+                        emoji = get_match_result_emoji(takim_gol, rakip_gol)
+                else:
+                    if len(parts) == 2:
+                        takim_gol, rakip_gol = int(parts[0]), int(parts[1])
+                        emoji = get_match_result_emoji(takim_gol, rakip_gol)
+
+                dizilis = cols[-4].get_text(strip=True)
+                if re.match(r"\d+:\d+", skor):
+                    matches.append({
+                        "tarih": tarih,
+                        "rakip": rakip,
+                        "sonuc": skor,
+                        "dizilis": dizilis if dizilis else "Yok",
+                        "emoji": emoji
+                    })
+            except Exception:
+                continue
+
+            if len(matches) == 500:
+                break
+
+        return matches
+
+    team_url = search_team_url(team_name)
+    if not team_url:
+        print("Takım bulunamadı:", team_name)
+        return []
+    team_id = get_team_id_from_url(team_url)
+    if not team_id:
+        print("Takım ID bulunamadı:", team_name)
+        return []
+
+    team_url_slug = team_name.lower().replace(" ", "-")
+    base_url = f"https://www.transfermarkt.com.tr/{team_url_slug}/spielplandatum/verein/{team_id}/plus/1"
+
+    matches = fetch_matches_from_url(base_url)
+
+    if len(matches) < 500:
+        alt_url = f"https://www.transfermarkt.com.tr/{team_url_slug}/spielplandatum/verein/{team_id}/saison_id/2024/plus/1"
+        matches = fetch_matches_from_url(alt_url)
+
+    last_5 = matches[-5:][::-1]
+
+    return last_5
+
+
+def get_last_matches(team_a, team_b):
 
     team_a_id = find_team_id(team_a)
     team_b_id = find_team_id(team_b)
@@ -260,6 +357,18 @@ class TeamInfoFetcher(QThread):
             "Stadyum": find_data("Stadyum")
         }
 
+class TeamLastMatchesFetcher(QThread):
+    finished = pyqtSignal(list, str)  # matches, team_type ("A" veya "B")
+
+    def __init__(self, team_name, team_type):
+        super().__init__()
+        self.team_name = team_name
+        self.team_type = team_type
+
+    def run(self):
+        matches = get_team_last_5_matches_with_tactics(self.team_name)
+        self.finished.emit(matches, self.team_type)
+
 
 # === Arayüz Uygulaması ===
 class Interface(QWidget):
@@ -305,6 +414,20 @@ class Interface(QWidget):
         self.match_history_text = QTextEdit()
         self.match_history_text.setReadOnly(True)
         self.match_history_text.setFixedWidth(300)
+        self.match_history_text.setFixedHeight(150)  # yüksekliği küçülttüm
+
+        # Takım A ve B Son 5 maç metin kutuları
+        self.team_a_last_label = QLabel("")  # Dinamik olarak doldurulacak
+        self.team_a_last_text = QTextEdit()
+        self.team_a_last_text.setReadOnly(True)
+        self.team_a_last_text.setFixedWidth(400)
+        self.team_a_last_text.setFixedHeight(220)
+
+        self.team_b_last_label = QLabel("")
+        self.team_b_last_text = QTextEdit()
+        self.team_b_last_text.setReadOnly(True)
+        self.team_b_last_text.setFixedWidth(400)
+        self.team_b_last_text.setFixedHeight(220)
 
         form_layout = QFormLayout()
         form_layout.addRow("Takım A Adı:", self.team_a_input)
@@ -351,13 +474,23 @@ class Interface(QWidget):
             team_info_vbox.addWidget(info)
             team_info_vbox.addSpacing(15)
 
+        match_and_last_vbox = QVBoxLayout()
+        match_and_last_vbox.addWidget(self.match_history_label)
+        match_and_last_vbox.addWidget(self.match_history_text)
+        match_and_last_vbox.addSpacing(10)
+        match_and_last_vbox.addWidget(self.team_a_last_label)
+        match_and_last_vbox.addWidget(self.team_a_last_text)
+        match_and_last_vbox.addSpacing(10)
+        match_and_last_vbox.addWidget(self.team_b_last_label)
+        match_and_last_vbox.addWidget(self.team_b_last_text)
+        match_and_last_vbox.addStretch()
+
         top_hbox = QHBoxLayout()
         top_hbox.addLayout(team_info_vbox)
-        top_hbox.addLayout(match_history_vbox)
+        top_hbox.addLayout(match_and_last_vbox)
         top_hbox.addStretch()
 
         hbox = QHBoxLayout()
-        hbox.addLayout(team_info_vbox)
         hbox.addLayout(main_layout)
         hbox.addLayout(top_hbox)
         self.setLayout(hbox)
@@ -400,6 +533,16 @@ class Interface(QWidget):
         self.match_history_thread.finished.connect(self.display_match_history)
         self.match_history_thread.start()
 
+        # Takım A son 5 maç
+        self.team_a_last_thread = TeamLastMatchesFetcher(self.team_a_input.text().strip(), "A")
+        self.team_a_last_thread.finished.connect(self.display_team_last_matches)
+        self.team_a_last_thread.start()
+
+        # Takım B son 5 maç
+        self.team_b_last_thread = TeamLastMatchesFetcher(self.team_b_input.text().strip(), "B")
+        self.team_b_last_thread.finished.connect(self.display_team_last_matches)
+        self.team_b_last_thread.start()
+
         if self.main_ref_input.text():
             self.main_ref_thread = RefereeInfoFetcher(self.main_ref_input.text(), "main")
             self.main_ref_thread.finished.connect(self.display_ref_info)
@@ -418,6 +561,30 @@ class Interface(QWidget):
         for m in matches:
             text += f"{m['date']}: {m['guest_team']} vs {m['home_team']} - {m['result']}\n"
         self.match_history_text.setText(text)
+
+    def display_team_last_matches(self, matches, team_type):
+        if not matches:
+            text = "Veri bulunamadı."
+        else:
+            text = ""
+            wins = draws = losses = 0
+            for m in matches:
+                if m["emoji"] == "✅":
+                    wins += 1
+                elif m["emoji"] == "🤝":
+                    draws += 1
+                elif m["emoji"] == "❌":
+                    losses += 1
+
+                text += f"{m['tarih']} vs {m['rakip']} | Sonuç: {m['sonuc']} {m['emoji']} | Diziliş: {m['dizilis']}\n"
+        text += f"\nSon 5 maçta: {wins} galibiyet ✅, {draws} beraberlik 🤝, {losses} mağlubiyet ❌"
+        if team_type == "A":
+            # Label'ı takım ismiyle doldur
+            self.team_a_last_label.setText(f"<b>{self.team_a_input.text().strip()} Son 5 Maçı:</b>")
+            self.team_a_last_text.setText(text)
+        else:
+            self.team_b_last_label.setText(f"<b>{self.team_b_input.text().strip()} Son 5 Maçı:</b>")
+            self.team_b_last_text.setText(text)
 
     def display_ref_info(self, html, pixmap, ref_type):
         label, image = (self.ref_info_main_text, self.ref_info_main_image) if ref_type == "main" else (self.ref_info_side_text, self.ref_info_side_image)
