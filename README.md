@@ -1,13 +1,16 @@
 # **[EN] ⚽ Football Match Analyzer (Demo)**
-This project is developed using AI-powered visual analysis techniques to analyze football match footage. The system performs the following on a football match video:
+This project is developed using AI-powered visual analysis techniques to analyze football match videos. The system:
 
-Detects all players, goalkeepers, referees, and technical staff on the field
-
-Automatically separates teams based on jersey colors
-
-Retrieves referee and team statistics from the web
+- Detects all players, goalkeepers, referees, and technical staff on the field
+-  
+- Automatically separates teams based on jersey colors
+- 
+- Retrieves referee and team statistics from the web
+- 
+- Provides match score prediction based on teams’ past data via FootballGPT  
 
 💡 The user only needs to enter the team names, jersey samples, and referee name to start the analysis.
+
 
 ## **🧠 Defined Classes**
 Using the YOLOv8 object detection model, the system identifies 6 different classes:
@@ -38,7 +41,14 @@ Stadium Name & Capacity
 
 Trophies Won
 
-Last 5 Head-to-Head Matches (if available)
+Last 5 Head-to-Head Matches (if available)  
+
+Last 5 Matches Details:  
+  - Match Date  
+  - Opponent  
+  - Match Score  
+  - Team Formation  
+  - Summary of wins, draws, and losses in last 5 matches  
 
 Information is retrieved from Transfermarkt and shown on the interface.
 
@@ -59,6 +69,14 @@ Penalty Stats for Last Season
 Number of Matches
 
 This data is also pulled from Transfermarkt.
+
+## ⚽ FootballGPT Match Prediction
+
+To get a match score prediction, press the **PredictFootballMatchWithFootballGPT** button.
+
+FootballGPT provides only the predicted score of the upcoming match based on teams’ past data, without detailed analysis.
+
+---
 
 ## **🎮 Usage Steps**
 
@@ -89,8 +107,12 @@ Use the Update button to refresh the tactical map
 ## **📽️ Demo: Analysis Output**
 
 **🔍 Tactical Map and Player Tracking**
-🎯 Below you can see how the system successfully distinguishes Arsenal and Manchester United teams, their goalkeepers, referees, and staff member. The interface also displays referee details, team stats, and the last 5 head-to-head matches between Arsenal and Manchester United.
-![OutputEn](https://github.com/user-attachments/assets/4bc8bb6d-fe91-46f2-b0d9-d606078a9bf9)
+
+🎯 The system successfully distinguishes Arsenal and Manchester United teams, their goalkeepers, referees, and technical staff. The interface also displays referee details, team statistics, the last 5 head-to-head matches between the two teams, and detailed last 5 matches info (scores, dates, opponents, formations).
+
+⚡ Additionally, FootballGPT uses all this data to provide only the predicted score result for the upcoming match.
+![Arsenal_Output1-ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/343a71d1-bc19-495b-858e-2719a9e86ca5)
+
 
 
 
@@ -101,12 +123,16 @@ Use the Update button to refresh the tactical map
 
 
 # **[TR]** ⚽ **Football Match Analyzer (Demo)**
-Bu proje, futbol karşılaşmalarının analizini gerçekleştirmek için yapay zekâ destekli görsel analiz teknikleri ile geliştirilmiştir. Sistem, bir futbol maç videosu üzerinden:
-Sahadaki tüm oyuncu, kaleci, hakem ve teknik ekip üyelerini tespit eder
-Takımları forma rengine göre otomatik olarak ayırır
-Hakem bilgilerini ve takım istatistiklerini web'den çeker
+Bu proje, yapay zekâ destekli görsel analiz teknikleri ile futbol maç videolarını analiz etmek için geliştirilmiştir. Sistem:
 
-💡 Kullanıcı, sadece takım isimlerini, forma örneklerini ve hakem isimlerini girerek analizi başlatabilir.
+- Sahadaki tüm oyuncuları, kalecileri, hakemleri ve teknik ekip üyelerini tespit eder  
+- Takımları forma renklerine göre otomatik olarak ayırır  
+- Hakem ve takım istatistiklerini web’den çeker  
+- FootballGPT ile takımların geçmiş verilerine göre maç sonucu tahmini yapar
+
+💡 Kullanıcı sadece takım isimlerini, forma örneklerini ve hakem ismini girerek analizi başlatabilir.
+
+---
 
 ## 🧠 **Tanımlanan Sınıflar (Classes)**
 
@@ -144,7 +170,14 @@ Girilen takım isimlerine göre:
 
 -Kazanılan kupalar
 
-- İki takımın aralarında (varsa)son 5 Maç Sonucu 
+- Aralarındaki Son 5 Maç (varsa)
+- 
+- Son 5 Maç Detayları:  
+  - Maç Tarihi  
+  - Rakip Takım  
+  - Maç Skoru  
+  - Takımın Dizilişi  
+  - Son 5 maçta kazanma, beraberlik ve mağlubiyet sayılarının özeti 
 
 Transfermarkt'tan çekilerek arayüzde gösterilir.
 
@@ -165,6 +198,14 @@ Girilen hakem adına göre:
 -Maç sayısı
 
 bilgileri yine Transfermarkt üzerinden alınır.
+
+## ⚽ FootballGPT Maç Tahmini
+
+Maç skor tahmini yapılmak istenirse **PredictFootballMatchWithFootballGPT** butonuna basılmalıdır.
+
+FootballGPT, takımların geçmiş verilerine göre sadece gelecek maçın tahmini skorunu verir, analiz yapmaz.
+
+---
 
 ## 🎮 **Kullanım Adımları**
 
@@ -191,8 +232,11 @@ Güncelle butonuyla sahadaki taktiksel harita güncellenir
 
 🔍 **Taktiksel Harita ve Oyuncu Takibi**
 
-🎯 Aşağıda sistemin Kayserispor ve Samsunspor takımlarını, kalecileri, hakem ve teknik ekibi başarıyla ayırt ettiğini aryıca arayüzde hakem bilgilerini, takım bilgilerini, Kayserispor ve Samsunspor arasındaki son 5 maçı da görebilirsiniz.
-![OutputTR (1)](https://github.com/user-attachments/assets/3df6d701-4186-48b5-8d07-b9a86b6367b1)
+🎯 Sistem Kayserispor ve Samsunspor takımlarını, kalecilerini, hakem ve teknik ekiplerini başarıyla ayırt eder. Arayüzde ayrıca hakem bilgileri, takım istatistikleri, iki takım arasındaki son 5 maç ve detaylı son 5 maç bilgileri (skorlar, tarihler, rakipler, dizilişler) gösterilir.
+
+⚡ Ayrıca FootballGPT, tüm bu verileri kullanarak gelecekteki maç için sadece tahmini skor sonucunu sunar.
+
+![Output_Last1-ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/e2a5221c-a528-4a98-8795-47164a5bd64a)
 
 
 
